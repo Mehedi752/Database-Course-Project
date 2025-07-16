@@ -5,12 +5,10 @@ import Logo from '../assets/logo-updated.png';
 import { useQuery } from "@tanstack/react-query";
 import useAxiosPublic from "../hooks/useAxiosPublic";
 import { BsChatLeftDots } from "react-icons/bs";
-import { useCart } from "../hooks/CartContext";
 
 const Navbar = () => {
-  const { user, signOutUser } = useAuth();
+  const { user, signOutUser} = useAuth();
   const axiosPublic = useAxiosPublic();
-  const { cartItems } = useCart();
 
   const { data: currentUser } = useQuery({
     queryKey: ['currentUser', user?.email],
@@ -19,6 +17,17 @@ const Navbar = () => {
       return res.data;
     },
   });
+
+  const { data: cartItems } = useQuery({
+    queryKey: ['cartItems', user?.email],
+    queryFn: async () => {
+      const res = await axiosPublic.get(`/cart/${user?.email}`);
+      return res.data;
+    },
+  });
+  console.log(cartItems)
+
+
 
   //   const { data: users = [], } = useQuery({
   //     queryKey: ['chatUsers', currentUser?.email],
@@ -215,8 +224,11 @@ const Navbar = () => {
           
 
           <div className="navbar-end gap-5">
-            <p className="relative">🛒<span className="absolute text-sm bottom-2">({cartItems.length})</span></p>
-            {user && user.photoURL ? (
+            <Link to={"/cart"}>
+              <p className="relative">🛒<span className="absolute text-sm bottom-2">({cartItems?.length})</span></p>
+            </Link>
+            
+              {user && user.photoURL ? (
               <div className="relative group">
                 <img
                   src={user.photoURL}

@@ -34,6 +34,7 @@ async function run() {
 
     const userCollection = client.db('boiLagbe').collection('users');
     const bookCollection = client.db('boiLagbe').collection('books');
+    const cartCollection = client.db('boiLagbe').collection('carts');
 
     //Users Related API
     app.post('/users', async (req, res) => {
@@ -128,7 +129,22 @@ async function run() {
       const result = await bookCollection.updateOne(query, updateDoc)
       res.send(result)
     })
-    
+
+
+    // Cart related API
+    app.post('/cart', async (req, res) => {
+      const cartItem = req.body
+      const result = await cartCollection.insertOne(cartItem)
+      res.send(result)
+    })
+
+
+    app.get('/cart/:buyerEmail', async (req, res) => {
+      const buyerEmail = req.params.buyerEmail
+      const query = { buyerEmail: buyerEmail }
+      const cartItems = await cartCollection.find(query).toArray()
+      res.send(cartItems)
+    })
 
     
 

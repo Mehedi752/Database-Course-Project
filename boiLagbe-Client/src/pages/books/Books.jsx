@@ -2,14 +2,16 @@ import { useQuery } from "@tanstack/react-query";
 import React, { useState } from "react";
 import useAxiosPublic from "../../hooks/useAxiosPublic";
 import { Link } from "react-router-dom";
-import { useCart } from "../../hooks/CartContext";
+import useAuth from "../../hooks/useAuth";
+import Swal from "sweetalert2";
 
 const Books = () => {
   const axiosPublic = useAxiosPublic();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedYear, setSelectedYear] = useState("All");
   const [sortOrder, setSortOrder] = useState("default");
-  const { addToCart } = useCart();
+  const { user } = useAuth();
+
 
   const { data: books = [], isLoading } = useQuery({
     queryKey: ["books"],
@@ -39,6 +41,50 @@ const Books = () => {
       if (sortOrder === "high") return b.finalPrice - a.finalPrice;
       return 0;
     });
+
+
+  const addToCart = (book) => {
+
+    const cartData = {
+      buyerEmail: user?.email,
+      item: {
+        bookId: book._id,
+        title: book.title,
+        price: book.finalPrice,
+        image: book.image,
+        bookEdition: book.editionYear,
+      },
+      sellerEmail: book.ownerEmail
+    }
+
+    axiosPublic.post('/cart', cartData)
+      .then(res => {
+        if (res.data.insertedId) {
+          Swal.fire({
+            title: "Book Added to Cart",
+            text: `"${book.title}" has been added to your cart.`,
+            icon: "success",
+            confirmButtonText: "OK",
+            background: "#f0f4f8",
+            color: "#333",
+            confirmButtonColor: "#3B82F6",
+          });
+        }
+      })
+      .catch(err => {
+        console.error("Error adding book to cart:", err);
+        Swal.fire({
+          title: "Error",
+          text: "An error occurred while adding the book to cart.",
+          icon: "error",
+          confirmButtonText: "OK",
+          background: "#f0f4f8",
+          color: "#333",
+          confirmButtonColor: "#3B82F6",
+        });
+      });
+
+  };
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-10">

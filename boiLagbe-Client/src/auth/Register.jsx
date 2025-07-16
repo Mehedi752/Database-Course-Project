@@ -36,16 +36,16 @@ const Register = () => {
                             timestamp: new Date().toISOString(),
                         }
 
-                        // axiosPublic.post('/users', user)
-                        //     .then(res => {
-                        //         console.log('User added to database : ', res.data);
-                        //         toast.success(`Welcome ${currentUser.displayName} to our website`);
-                        //         navigate(location.state ? location.state : '/');
+                        axiosPublic.post('/users', user)
+                            .then(res => {
+                                console.log('User added to database : ', res.data);
+                                toast.success(`Welcome ${user.displayName} to our website`);
+                                navigate(location.state ? location.state : '/');
 
-                        //     })
-                        //     .catch(err => {
-                        //         console.log('Error adding user to database : ', err);
-                        //     })
+                            })
+                            .catch(err => {
+                                console.log('Error adding user to database : ', err);
+                            })
 
                     })
                     .catch((error) => {

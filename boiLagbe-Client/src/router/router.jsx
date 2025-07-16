@@ -10,6 +10,8 @@ import AddBooks from "../pages/add-books/AddBooks";
 import Books from "../pages/books/Books";
 import MyAddedBooks from "../pages/my-added-books/MyAddedBooks";
 import UpdateBook from "../pages/update-book/UpdateBook";
+import Cart from "../pages/cart/Cart";
+import Payment from "../pages/payment/Payment";
 
 const router = createBrowserRouter([
   {
@@ -76,6 +78,14 @@ const router = createBrowserRouter([
       {
         path: '/books/update/:id',
         element: <UpdateBook></UpdateBook>
+      },
+      {
+        path: '/cart',
+        element: <Cart></Cart>
+      },
+      {
+        path: '/payment',
+        element: <Payment></Payment>
       },
     //   {
     //     path: '/donation',

@@ -18,6 +18,7 @@ const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
     const [trustScore, setTrustScore] = useState(0);
     const [bookSell, setBookSell] = useState(false);
+    const [cartItems, setCartItems] = useState([]);
 
     // Create new user
     const createNewUser = (email, password) => {
@@ -86,7 +87,9 @@ const AuthProvider = ({ children }) => {
         trustScore,
         setTrustScore,
         bookSell,
-        setBookSell
+        setBookSell,
+        cartItems,
+        setCartItems
     }
 
     return (
