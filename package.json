@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "gittu": "^1.0.10"
+    "gittu": "^1.0.10",
+    "nodemailer": "^7.0.5"
   }
 }
