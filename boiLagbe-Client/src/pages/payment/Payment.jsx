@@ -60,7 +60,7 @@ const Payment = () => {
       ) {
         await axiosPublic.post('/confirm-payment', {
           email: user?.email,
-          paymentMethod,
+          paymentMethod: walletType,
           transactionId,
           amount: payableTotal
         })

@@ -4,7 +4,7 @@ const cors = require('cors')
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb')
 require('dotenv').config()
 const nodemailer = require('nodemailer')
- 
+
 const port = process.env.PORT || 5000
 
 // Middleware
@@ -169,24 +169,50 @@ async function run () {
 
     app.post('/confirm-payment', async (req, res) => {
       const { email, paymentMethod, transactionId, amount } = req.body
+      console.log(
+        `Confirming payment for ${email} with method ${paymentMethod} and transaction ID ${transactionId} for amount ৳${amount}`
+      )
 
       try {
-        // Send confirmation email
-        const subject = '🧾 Order Confirmation'
+        const subject = '🧾 Your BoiLagbe Order Confirmation'
+
         const htmlContent = `
-      <h2>Thank you for your order!</h2>
-      <p>Your payment method: <strong>${paymentMethod}</strong></p>
-      ${
-        transactionId
-          ? `<p>Transaction ID: <strong>${transactionId}</strong></p>`` <p>Paid amount: <strong>৳${amount}</strong></p>`
-          : ' <p>Due amount: <strong>৳${amount}</strong></p>'
-      }
-      <p>We have received your order and will process it shortly.</p>
-      <p>If you have any questions, please contact us at <a href="mailto:${
-        process.env.EMAIL_SENDER
-      }">${process.env.EMAIL_SENDER}</a>.</p>
-      <p>Thank you for choosing BoiLagbe!</p>
-    `
+  <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #333; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #eee; border-radius: 8px;">
+    <h2 style="color: #2c3e50;">📚 Thank You for Your Order!</h2>
+
+    <p>Hi there,</p>
+
+    <p>We're excited to let you know that your order has been <strong>successfully confirmed</strong>.</p>
+
+    <h3 style="margin-top: 20px; color: #2980b9;">🧾 Order Summary</h3>
+    <p><strong>💳 Payment Method:</strong> ${paymentMethod}</p>
+    ${
+      transactionId
+        ? `<p><strong>🆔 Transaction ID:</strong> ${transactionId}</p>
+           <p><strong>💰 Paid Amount:</strong> ৳${amount}</p>`
+        : `<p><strong>💰 Amount Due:</strong> ৳${amount}</p>`
+    }
+
+    <p>🛍️ Our team has received your order and will begin processing it shortly. You’ll be notified once it's on the way!</p>
+
+    <p>If you have any questions or need help, feel free to contact us at 
+      <a href="mailto:${process.env.EMAIL_SENDER}" style="color: #2980b9;">${
+          process.env.EMAIL_SENDER
+        }</a>.
+    </p>
+
+    <p style="margin-top: 30px;">Thanks again for choosing <strong>BoiLagbe</strong>! 🚀</p>
+
+    <hr style="margin: 30px 0; border: none; border-top: 1px solid #ddd;" />
+
+    <div style="font-size: 0.9em; color: #444; line-height: 1.6;">
+      <p style="margin: 0; font-weight: bold; font-size: 1rem;">📦 BoiLagbe Customer Support</p>
+      <p style="margin: 0;">📞 <strong>Phone:</strong> <a href="tel:+8801234567890" style="color: #2980b9; text-decoration: none;">+880 1234-567890</a></p>
+      <p style="margin: 0;">📍 <strong>Address:</strong> 123, Mirpur, Dhaka 1207, Bangladesh</p>
+      <p style="margin-top: 8px; color: #888; font-size: 0.85em;">✉️ This is an automated message – please do not reply directly.</p>
+    </div>
+  </div>
+`
 
         await sendEmail(email, subject, htmlContent)
 
