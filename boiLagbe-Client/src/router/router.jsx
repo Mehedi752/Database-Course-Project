@@ -12,6 +12,8 @@ import MyAddedBooks from "../pages/my-added-books/MyAddedBooks";
 import UpdateBook from "../pages/update-book/UpdateBook";
 import Cart from "../pages/cart/Cart";
 import Payment from "../pages/payment/Payment";
+import BookDetails from "../pages/books/BookDetails";
+import Feedbacks from "../pages/feedbacks/Feedbacks";
 
 const router = createBrowserRouter([
   {
@@ -29,7 +31,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/contact",
-        element: <Contact/>
+        element: <Contact />
       },
       {
         path: "/auth/register",
@@ -47,34 +49,34 @@ const router = createBrowserRouter([
         path: "/books",
         element: <Books></Books>
       },
-    //   {
-    //     path: "/posts/:id",
-    //     element: <PrivateRoute><PostDetails></PostDetails></PrivateRoute>,
-    //   },
+      {
+        path: '/books/:id',
+        element: <BookDetails></BookDetails>
+      },
       {
         path: '/my-added-books',
         element: <MyAddedBooks></MyAddedBooks>
       },
-    //   {
-    //     path: '/claim-item',
-    //     element: <ClaimItem></ClaimItem>
-    //   },
-    //   {
-    //     path: '/all-claims',
-    //     element: <PrivateAdmin><AllClaims /></PrivateAdmin>
-    //   },
-    //   {
-    //     path: '/my-claims',
-    //     element: <MyClaims />
-    //   },
-    //   {
-    //     path: '/my-profile',
-    //     element: <MyProfile></MyProfile>
-    //   },
-    //   {
-    //     path: '/claim-details/:id',
-    //     element: <ClaimDetails />
-    //   },
+      //   {
+      //     path: '/claim-item',
+      //     element: <ClaimItem></ClaimItem>
+      //   },
+      //   {
+      //     path: '/all-claims',
+      //     element: <PrivateAdmin><AllClaims /></PrivateAdmin>
+      //   },
+      //   {
+      //     path: '/my-claims',
+      //     element: <MyClaims />
+      //   },
+      //   {
+      //     path: '/my-profile',
+      //     element: <MyProfile></MyProfile>
+      //   },
+      //   {
+      //     path: '/claim-details/:id',
+      //     element: <ClaimDetails />
+      //   },
       {
         path: '/books/update/:id',
         element: <UpdateBook></UpdateBook>
@@ -87,35 +89,35 @@ const router = createBrowserRouter([
         path: '/payment',
         element: <Payment></Payment>
       },
-    //   {
-    //     path: '/donation',
-    //     element: <Donation></Donation>
-    //   },
-    //   {
-    //     path: '/success',
-    //     element: <SuccessPaymentModal></SuccessPaymentModal>
-    //   },
-    //   {
-    //     path: '/feedbacks',
-    //     element: <Feedbacks></Feedbacks>
-    //   },
+      //   {
+      //     path: '/donation',
+      //     element: <Donation></Donation>
+      //   },
+      //   {
+      //     path: '/success',
+      //     element: <SuccessPaymentModal></SuccessPaymentModal>
+      //   },
+        {
+          path: '/feedbacks',
+          element: <Feedbacks></Feedbacks>
+        },
     ],
   },
-//   {
-//     path: "/chats",
-//     element: <ChatLayout></ChatLayout>,
-//     errorElement: <ErrorPage></ErrorPage>,
-//     children: [
-//       {
-//         path: '/chats',
-//         element: <ChatApp></ChatApp>
-//       },
-//       {
-//         path: '/chats/:receieverEmail',
-//         element: <ChatApp></ChatApp>
-//       },
-//     ],
-//   },
+  //   {
+  //     path: "/chats",
+  //     element: <ChatLayout></ChatLayout>,
+  //     errorElement: <ErrorPage></ErrorPage>,
+  //     children: [
+  //       {
+  //         path: '/chats',
+  //         element: <ChatApp></ChatApp>
+  //       },
+  //       {
+  //         path: '/chats/:receieverEmail',
+  //         element: <ChatApp></ChatApp>
+  //       },
+  //     ],
+  //   },
 ]);
 
 export default router;

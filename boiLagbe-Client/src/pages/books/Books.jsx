@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import React, { useState } from "react";
 import useAxiosPublic from "../../hooks/useAxiosPublic";
 import { Link } from "react-router-dom";
@@ -11,9 +11,10 @@ const Books = () => {
   const [selectedYear, setSelectedYear] = useState("All");
   const [sortOrder, setSortOrder] = useState("default");
   const { user } = useAuth();
+  const queryClient = useQueryClient();
 
 
-  const { data: books = [], isLoading } = useQuery({
+  const { data: books = [], isLoading} = useQuery({
     queryKey: ["books"],
     queryFn: async () => {
       const res = await axiosPublic.get("/books");
@@ -69,6 +70,7 @@ const Books = () => {
             color: "#333",
             confirmButtonColor: "#3B82F6",
           });
+          queryClient.invalidateQueries(["cartItems"])
         }
       })
       .catch(err => {

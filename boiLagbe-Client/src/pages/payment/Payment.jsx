@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import useAxiosPublic from '../../hooks/useAxiosPublic'
 import useAuth from '../../hooks/useAuth'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useLocation } from 'react-router-dom'
 import bkashLogo from '../../assets/bkash.png'
 import nagadLogo from '../../assets/nagad.png'
@@ -15,6 +15,8 @@ const Payment = () => {
   const [paymentMethod, setPaymentMethod] = useState('')
   const [walletType, setWalletType] = useState('')
   const [transactionId, setTransactionId] = useState('')
+  const queryClient = useQueryClient()
+  let paymentOkay = false;
 
   const {
     totalPrice = 0,
@@ -52,6 +54,8 @@ const Payment = () => {
           icon: '💸'
         }
       )
+      paymentOkay = true;
+      queryClient.invalidateQueries(['cartItems'])
     } else if (paymentMethod === 'wallet') {
       if (
         walletType &&
@@ -71,6 +75,7 @@ const Payment = () => {
             icon: '📱'
           }
         )
+        queryClient.invalidateQueries(['cartItems'])
       } else {
         toast.error('⛔দয়া করে ১২ থেকে ১৮ সংখ্যার ট্রানজেকশন আইডি দিন!', {
           duration: 4000
@@ -135,11 +140,10 @@ const Payment = () => {
               ].map(wallet => (
                 <label
                   key={wallet.name}
-                  className={`flex flex-col items-center gap-1 border rounded p-2 w-24 cursor-pointer ${
-                    walletType === wallet.name
-                      ? 'border-blue-500'
-                      : 'border-gray-300'
-                  }`}
+                  className={`flex flex-col items-center gap-1 border rounded p-2 w-24 cursor-pointer ${walletType === wallet.name
+                    ? 'border-blue-500'
+                    : 'border-gray-300'
+                    }`}
                 >
                   <input
                     type='radio'
@@ -172,12 +176,25 @@ const Payment = () => {
           </div>
         </div>
 
-        <button
-          onClick={handleOrderConfirm}
-          className='w-[300px] mx-auto btn bg-blue-600 hover:bg-blue-700 text-white py-2 rounded transition'
-        >
-          অর্ডার নিশ্চিত করুন ৳{payableTotal.toFixed(0)}
-        </button>
+        {
+          paymentOkay ? (
+            <div className='bg-green-50 border border-green-200 p-4 rounded shadow text-center'>
+              <h2 className='text-lg font-semibold text-green-700'>
+                আপনার অর্ডার সফলভাবে নিশ্চিত হয়েছে!
+              </h2>
+              <p className='text-sm text-green-600 mt-2'>
+                ধন্যবাদ! আপনার অর্ডারটি প্রক্রিয়াধীন রয়েছে। বিস্তারিত তথ্যের জন্য
+                আপনার ইমেইল চেক করুন।
+              </p>
+            </div>
+          ) :  (
+              <button
+                onClick={handleOrderConfirm}
+                className='w-[300px] mx-auto btn bg-blue-600 hover:bg-blue-700 text-white py-2 rounded transition'
+              >
+                অর্ডার নিশ্চিত করুন ৳{payableTotal.toFixed(0)}
+              </button>)
+        }
       </div>
 
       {/* Checkout Summary */}
@@ -201,7 +218,7 @@ const Payment = () => {
           order!
         </div>
       </div>
-    </div>
+    </div >
   )
 }
 
