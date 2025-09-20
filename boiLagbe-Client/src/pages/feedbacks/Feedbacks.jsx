@@ -1,7 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaStar, FaRegStar, FaUserCircle, FaThumbsUp, FaReply } from "react-icons/fa";
 import useAuth from "../../hooks/useAuth";
+import useAxiosPublic from '../../hooks/useAxiosPublic';
+import { toast } from 'react-toastify';
 
 // Helper for star rating display
 const StarRatingDisplay = ({ rating }) => {
@@ -88,51 +90,49 @@ const FeedbackCard = ({
     const handleReplySubmit = (e) => {
         e.preventDefault();
         if (!replyText.trim()) return;
-        addReply(feedback.id, replyText.trim(), replyAnonymous);
+        addReply(feedback._id, replyText.trim(), replyAnonymous);
         setReplyText("");
         setReplyAnonymous(true);
         setReplyingTo(null);
     };
 
-
-
     return (
         <motion.div
             layout
-            initial={{ opacity: 0, scale: 0.95 }}
+            initial={{ opacity: 0, scale: 0.97 }}
             animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            className="card bg-white shadow-lg border border-gray-200 rounded-xl p-6 flex flex-col space-y-4"
+            exit={{ opacity: 0, scale: 0.97 }}
+            className="bg-gradient-to-br from-white via-indigo-50 to-blue-50 shadow-xl border border-indigo-100 rounded-2xl p-7 flex flex-col space-y-4 transition-all duration-300 hover:shadow-2xl"
         >
             <div className="flex items-center space-x-4">
                 <Avatar name={feedback.anonymous ? "Anonymous" : feedback.name} />
                 <div>
-                    <h3 className="text-lg font-semibold text-gray-900 flex items-center space-x-2">
+                    <h3 className="text-lg font-bold text-indigo-900 flex items-center space-x-2">
                         <span>
                             {feedback.anonymous ? "Anonymous" : feedback.name}
                         </span>
                         <StarRatingDisplay rating={feedback.rating} />
                     </h3>
-                    <p className="text-sm text-gray-500">{feedback.email && !feedback.anonymous ? feedback.email : null}</p>
+                    <p className="text-xs text-gray-400">{feedback.email && !feedback.anonymous ? feedback.email : null}</p>
                 </div>
             </div>
 
-            <p className="text-gray-700 whitespace-pre-wrap">{feedback.message}</p>
+            <p className="text-gray-700 text-base whitespace-pre-wrap italic border-l-4 border-indigo-200 pl-4 bg-white/60 rounded-lg py-2">{feedback.message}</p>
 
             {/* Likes & Reply Buttons */}
-            <div className="flex items-center justify-between text-gray-600">
+            <div className="flex items-center justify-between text-gray-500 mt-2">
                 <button
-                    onClick={() => onLike(feedback.id)}
-                    className="flex items-center space-x-1 hover:text-blue-600 focus:outline-none"
+                    onClick={() => onLike(feedback._id)}
+                    className="flex items-center gap-1 hover:text-blue-600 focus:outline-none px-3 py-1 rounded-full bg-indigo-50 hover:bg-blue-100 transition"
                     aria-label="Like feedback"
                 >
                     <FaThumbsUp className="text-lg" />
-                    <span>{feedback.likes || 0}</span>
+                    <span className="font-semibold">{feedback.likes || 0}</span>
                 </button>
 
                 <button
-                    onClick={() => setReplyingTo(feedback.id === replyingTo ? null : feedback.id)}
-                    className="flex items-center space-x-1 hover:text-blue-600 focus:outline-none"
+                    onClick={() => setReplyingTo(feedback._id === replyingTo ? null : feedback._id)}
+                    className="flex items-center gap-1 hover:text-blue-600 focus:outline-none px-3 py-1 rounded-full bg-indigo-50 hover:bg-blue-100 transition"
                     aria-label="Reply to feedback"
                 >
                     <FaReply className="text-lg" />
@@ -142,15 +142,15 @@ const FeedbackCard = ({
 
             {/* Replies */}
             {feedback.replies && feedback.replies.length > 0 && (
-                <div className="pl-12 border-l border-gray-300 space-y-3 mt-2">
+                <div className="pl-10 border-l-2 border-indigo-100 space-y-3 mt-2">
                     {feedback.replies.map((rep, i) => (
-                        <div key={i} className="bg-gray-50 p-3 rounded-lg shadow-sm flex justify-between items-center">
+                        <div key={i} className="bg-indigo-50 p-3 rounded-lg shadow flex justify-between items-center">
                             <p className="text-sm text-gray-700 whitespace-pre-wrap">
-                                <span className="font-semibold">{rep.name}:</span> {rep.message}
+                                <span className="font-semibold text-indigo-700">{rep.name}:</span> {rep.message}
                             </p>
                             <button
-                                onClick={() => onLoveReply(feedback.id, i)}
-                                className="flex items-center space-x-1 text-pink-600 hover:text-pink-800 focus:outline-none"
+                                onClick={() => onLoveReply(feedback._id, i)}
+                                className="flex items-center gap-1 text-pink-600 hover:text-pink-800 focus:outline-none px-2 py-1 rounded-full bg-pink-50 hover:bg-pink-100 transition"
                                 aria-label="Love reply"
                                 title="Love this reply"
                                 type="button"
@@ -176,16 +176,14 @@ const FeedbackCard = ({
                 </div>
             )}
 
-
-
             {/* Reply Form */}
-            {replyingTo === feedback.id && (
+            {replyingTo === feedback._id && (
                 <form
                     onSubmit={handleReplySubmit}
-                    className="mt-3 flex flex-col space-y-2"
+                    className="mt-3 flex flex-col space-y-2 bg-white/80 rounded-xl p-4 border border-indigo-100"
                 >
                     <textarea
-                        className="textarea textarea-bordered resize-none"
+                        className="textarea textarea-bordered resize-none text-base"
                         rows={2}
                         placeholder="Write your reply..."
                         value={replyText}
@@ -217,40 +215,8 @@ const FeedbackCard = ({
 
 const FeedbacksPage = () => {
     const { user } = useAuth();
-    console.log(user);
-    const [feedbacks, setFeedbacks] = useState([
-        {
-            id: 1,
-            name: "Hasan Mahmud",
-            email: "hasan@example.com",
-            message: "BoiLagbe is an amazing platform for book lovers. Highly recommend! 😊",
-            rating: 5,
-            anonymous: false,
-            likes: 17,
-            replies: [
-                { name: "Ayesha", message: "Totally agree! Love this platform." },
-                { name: "Rahim", message: "Great collection of books!" },
-                { name: "Rina", message: "I found my favorite book here!" },
-                { name: "Ali", message: "Best place to buy books online!" },
-                { name: "Kaiser", message: "I love the user interface!" },
-            ],
-        },
-        {
-            id: 2,
-            name: "Ayesha Khatun",
-            email: "ayesha@example.com",
-            message: "Great UI and the collection is diverse. Keep up the good work! 👍",
-            rating: 4,
-            anonymous: true,
-            likes: 43,
-            replies: [
-                { name: "Hasan", message: "Thanks for the feedback!" },
-                { name: "Karim", message: "I love the UI too!" },
-                { name: "Reza", message: "Diverse collection indeed!" },
-                { name: "Akbar", message: "UI is user-friendly!" },
-            ],
-        },
-    ]);
+    const axiosPublic = useAxiosPublic();
+    const [feedbacks, setFeedbacks] = useState([]);
 
     const [newFeedback, setNewFeedback] = useState({
         name: "",
@@ -260,20 +226,26 @@ const FeedbacksPage = () => {
         anonymous: false,
     });
 
-    const handleLoveReply = (feedbackId, replyIndex) => {
-        setFeedbacks((prev) =>
-            prev.map((fb) => {
-                if (fb.id === feedbackId) {
+    useEffect(() => {
+        axiosPublic.get('/feedbacks').then(res => setFeedbacks(res.data));
+    }, []);
+
+    const handleLoveReply = async (feedbackId, replyIndex) => {
+        try {
+            await axiosPublic.patch(`/feedbacks/${feedbackId}/reply-love`, { replyIndex });
+            setFeedbacks(prev => prev.map(fb => {
+                if (fb._id === feedbackId) {
                     const updatedReplies = fb.replies.map((rep, i) =>
                         i === replyIndex ? { ...rep, loves: (rep.loves || 0) + 1 } : rep
                     );
                     return { ...fb, replies: updatedReplies };
                 }
                 return fb;
-            })
-        );
+            }));
+        } catch {
+            toast.error('Failed to love reply');
+        }
     };
-
 
     const [showModal, setShowModal] = useState(false);
     const [replyingTo, setReplyingTo] = useState(null);
@@ -286,71 +258,62 @@ const FeedbacksPage = () => {
         }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         if (!newFeedback.name && !newFeedback.anonymous) {
-            alert("Please enter your name or select anonymous.");
+            toast.error('Please enter your name or select anonymous.');
             return;
         }
         if (!newFeedback.message.trim()) {
-            alert("Please enter your feedback.");
+            toast.error('Please enter your feedback.');
             return;
         }
-
-        const newEntry = {
-            id: Date.now(),
-            ...newFeedback,
-            likes: 0,
-            replies: [],
-        };
-        setFeedbacks([newEntry, ...feedbacks]);
-        setNewFeedback({
-            name: "",
-            email: "",
-            message: "",
-            rating: 5,
-            anonymous: false,
-        });
-        setShowModal(false);
+        try {
+            const { data } = await axiosPublic.post('/feedbacks', {
+                ...newFeedback,
+                likes: 0,
+                replies: [],
+            });
+            setFeedbacks([data, ...feedbacks]);
+            setNewFeedback({ name: '', email: '', message: '', rating: 5, anonymous: false });
+            setShowModal(false);
+            toast.success('Feedback submitted!');
+        } catch {
+            toast.error('Failed to submit feedback');
+        }
     };
 
-    const handleLike = (id) => {
-        setFeedbacks((prev) =>
-            prev.map((fb) =>
-                fb.id === id ? { ...fb, likes: (fb.likes || 0) + 1 } : fb
-            )
-        );
+    const handleLike = async (id) => {
+        try {
+            await axiosPublic.patch(`/feedbacks/${id}/like`);
+            setFeedbacks(prev => prev.map(fb => fb._id === id ? { ...fb, likes: (fb.likes || 0) + 1 } : fb));
+        } catch {
+            toast.error('Failed to like feedback');
+        }
     };
 
-    const addReply = (id, replyMsg, anonymous) => {
-        setFeedbacks((prev) =>
-            prev.map((fb) =>
-                fb.id === id
-                    ? {
-                        ...fb,
-                        replies: [
-                            ...fb.replies,
-                            { name: anonymous ? "Anonymous" : user?.displayName || "User", message: replyMsg, loves: 0 },
-                        ],
-                    }
-                    : fb
-            )
-        );
+    const addReply = async (id, replyMsg, anonymous) => {
+        try {
+            const reply = { name: anonymous ? 'Anonymous' : user?.displayName || 'User', message: replyMsg, loves: 0 };
+            await axiosPublic.patch(`/feedbacks/${id}/reply`, { reply });
+            setFeedbacks(prev => prev.map(fb =>
+                fb._id === id ? { ...fb, replies: [...(fb.replies || []), reply] } : fb
+            ));
+        } catch {
+            toast.error('Failed to add reply');
+        }
     };
-
 
 
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-indigo-50 py-12 px-4">
+        <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-indigo-50 py-16 px-2">
             <div className="max-w-6xl mx-auto">
-                <div className="flex justify-between items-center mb-8">
-                    <h1 className="text-4xl font-extrabold text-indigo-900">
-                        What Our Readers Say
-                    </h1>
+                <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-12 gap-6 md:gap-0">
+                    <h1 className="text-4xl md:text-5xl font-extrabold text-indigo-900 tracking-tight">What Our Readers Say</h1>
                     <button
                         onClick={() => setShowModal(true)}
-                        className="btn btn-primary px-6 py-3 rounded-lg shadow-lg hover:shadow-xl transition"
+                        className="btn btn-primary px-8 py-3 rounded-xl shadow-lg hover:shadow-2xl text-lg font-semibold transition-all"
                     >
                         + Add Feedback
                     </button>
@@ -368,11 +331,11 @@ const FeedbacksPage = () => {
                     ) : (
                         <motion.div
                             layout
-                            className="grid grid-cols-1 md:grid-cols-2 gap-8"
+                            className="grid grid-cols-1 md:grid-cols-2 gap-10"
                         >
                             {feedbacks.map((fb) => (
                                 <FeedbackCard
-                                    key={fb.id}
+                                    key={fb._id}
                                     feedback={fb}
                                     onLike={handleLike}
                                     onReply={() => { }}
@@ -390,32 +353,29 @@ const FeedbacksPage = () => {
                 <AnimatePresence>
                     {showModal && (
                         <motion.div
-                            className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50"
+                            className="fixed inset-0 flex items-center justify-center z-50"
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             onClick={() => setShowModal(false)}
+                            style={{ background: 'transparent' }}
                         >
                             <motion.div
-                                className="bg-white rounded-xl shadow-xl p-8 w-full max-w-lg relative"
+                                className="bg-white rounded-2xl shadow-2xl p-10 w-full max-w-lg relative border border-indigo-100"
                                 initial={{ y: 50, opacity: 0 }}
                                 animate={{ y: 0, opacity: 1 }}
                                 exit={{ y: 50, opacity: 0 }}
                                 onClick={(e) => e.stopPropagation()}
                             >
-                                <h2 className="text-2xl font-bold mb-6 text-indigo-900">
-                                    Share Your Feedback
-                                </h2>
+                                <h2 className="text-2xl md:text-3xl font-bold mb-8 text-indigo-900 text-center">Share Your Feedback</h2>
                                 <form
                                     onSubmit={handleSubmit}
-                                    className="flex flex-col space-y-4"
+                                    className="flex flex-col space-y-5"
                                 >
-                                    <div className="flex items-center space-x-4">
+                                    <div className="flex flex-col md:flex-row md:items-center md:space-x-6 space-y-3 md:space-y-0">
                                         <div className="form-control flex-grow">
                                             <label className="label">
-                                                <span className="label-text font-semibold">
-                                                    Name
-                                                </span>
+                                                <span className="label-text font-semibold">Name</span>
                                             </label>
                                             <input
                                                 type="text"
@@ -436,9 +396,7 @@ const FeedbacksPage = () => {
                                                 onChange={handleChange}
                                                 className="checkbox checkbox-primary"
                                             />
-                                            <span className="text-gray-700 font-medium">
-                                                Anonymous
-                                            </span>
+                                            <span className="text-gray-700 font-medium">Anonymous</span>
                                         </label>
                                     </div>
 
@@ -459,9 +417,7 @@ const FeedbacksPage = () => {
 
                                     <div className="form-control">
                                         <label className="label">
-                                            <span className="label-text font-semibold">
-                                                Feedback Message
-                                            </span>
+                                            <span className="label-text font-semibold">Feedback Message</span>
                                         </label>
                                         <textarea
                                             name="message"
@@ -476,9 +432,7 @@ const FeedbacksPage = () => {
 
                                     <div className="form-control">
                                         <label className="label">
-                                            <span className="label-text font-semibold">
-                                                Rating
-                                            </span>
+                                            <span className="label-text font-semibold">Rating</span>
                                         </label>
                                         <StarRatingInput
                                             rating={newFeedback.rating}

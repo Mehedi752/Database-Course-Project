@@ -27,18 +27,36 @@ const Navbar = () => {
   });
   console.log(cartItems)
 
-
-
-  //   const { data: users = [], } = useQuery({
-  //     queryKey: ['chatUsers', currentUser?.email],
-  //     queryFn: async () => {
-  //       const res = await axiosPublic.get(`/get-chats/${currentUser._id}`);
-  //       return res.data;
-  //     },
-  //   });
-
-  //   const count = users.filter(user => user.isRead).length
-
+  // Get unread chat count for notification badge
+  const { data: unreadChatCount = 0 } = useQuery({
+    queryKey: ['unreadChatCount', user?.email],
+    queryFn: async () => {
+      if (!user?.email) return 0;
+      // Use the same logic as in ChatApp.jsx
+      const ADMIN_EMAIL = "mehedihasansagor301@gmail.com";
+      const res = await axiosPublic.get(`/users/${user?.email}`);
+      const sender = res.data;
+      if (!sender || !sender._id) {
+        console.warn('User _id missing for unread chat count');
+        return 0;
+      }
+      if (user?.email === ADMIN_EMAIL) {
+        const usersRes = await axiosPublic.get(`/users`);
+        const users = usersRes.data.filter(u => u.email !== ADMIN_EMAIL);
+        let total = 0;
+        for (const u of users) {
+          if (!u._id) continue;
+          const unreadRes = await axiosPublic.get(`/messages?sender=${u._id}&receiver=${sender._id}&unreadOnly=true`);
+          if (unreadRes.data.length > 0) total++;
+        }
+        return total;
+      } else {
+        const unreadRes = await axiosPublic.get(`/messages?sender=${ADMIN_EMAIL}&receiver=${sender._id}&unreadOnly=true`);
+        return unreadRes.data.length > 0 ? 1 : 0;
+      }
+    },
+    enabled: !!user?.email
+  });
 
   const links = (
     <>
@@ -65,10 +83,10 @@ const Navbar = () => {
               }
               to={"/books"}
             >
-              All Books
+              Browse Books
             </NavLink>
           </li>
-          <li>
+          {/* <li>
             <NavLink
               className={({ isActive }) =>
                 isActive
@@ -79,8 +97,8 @@ const Navbar = () => {
             >
               Add Books
             </NavLink>
-          </li>
-          <li>
+          </li> */}
+          {/* <li>
             <NavLink
               className={({ isActive }) =>
                 isActive
@@ -91,22 +109,9 @@ const Navbar = () => {
             >
               My Added Books
             </NavLink>
-          </li>
+          </li> */}
 
-          {/* {currentUser?.role === "admin" && (
-            <li>
-              <NavLink
-                className={({ isActive }) =>
-                  isActive
-                    ? "text-[#3B82F6] font-bold border-b-4 border-[#3B82F6] focus:outline-none"
-                    : "text-white font-medium px-2 py-2 rounded-md hover:text-blue-500 focus:outline-none"
-                }
-                to={"/all-claims"}
-              >
-                All Claims (Admin)
-              </NavLink>
-            </li>
-          )} */}
+
 
 
           {currentUser?.role === "user" && (
@@ -221,35 +226,62 @@ const Navbar = () => {
             <ul className="menu menu-horizontal px-1">{links}</ul>
           </div>
 
-          
-
-          <div className="navbar-end gap-5">
-            <Link to={"/cart"}>
+          <div className="navbar-end gap-3">
+            <Link to={"/cart"} className="mr-3">
               <p className="relative">🛒<span className="absolute text-sm bottom-2">({cartItems?.length})</span></p>
             </Link>
-            
-              {user && user.photoURL ? (
-              <div className="relative group">
-                <img
-                  src={user.photoURL}
-                  alt=""
-                  className="w-8 h-8 rounded-full"
-                />
-
-                <p className="absolute top-8 w-[120px] text-center mt-1 left-1/2 transform -translate-x-1/2 bg-[#1a237e] text-white text-xs font-semibold rounded-md px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  {user.displayName}
-                </p>
+            <Link to={"/chats"} className="relative flex items-center justify-center">
+              <BsChatLeftDots className="w-7 h-7 text-blue-400 hover:text-blue-600 transition" title="Chat" />
+              {unreadChatCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-green-600 text-white text-xs rounded-full px-1.5 py-0.5">
+                  {unreadChatCount}
+                </span>
+              )}
+            </Link>
+            {user && user.photoURL ? (
+              <div className="relative">
+                <button
+                  className="focus:outline-none"
+                  tabIndex={0}
+                  onClick={e => {
+                    const dropdown = document.getElementById('profile-dropdown');
+                    if (dropdown) dropdown.classList.toggle('hidden');
+                  }}
+                >
+                  <img
+                    src={user.photoURL}
+                    alt="Profile"
+                    className="w-9 h-9 rounded-full border-2 border-blue-500 shadow-md hover:scale-105 transition-transform"
+                  />
+                </button>
+                {/* Dropdown Card */}
+                <div
+                  id="profile-dropdown"
+                  className="hidden absolute right-0 mt-3 w-56 bg-white border border-blue-100 rounded-xl shadow-xl z-50 py-2 flex flex-col animate-fade-in"
+                  onBlur={e => e.currentTarget.classList.add('hidden')}
+                  tabIndex={-1}
+                >
+                  <div className="flex items-center gap-1 px-4 py-3 border-b border-blue-50">
+                    <img src={user.photoURL} alt="Profile" className="w-8 h-8 rounded-full border-2 border-blue-400 shadow" />
+                    <span className="text-indigo-700 font-semibold text-base break-all">{user.displayName}</span>
+                  </div>
+                  <Link to="/my-added-books" className="px-4 py-2 hover:bg-blue-50 text-gray-800 flex items-center gap-2 transition">
+                    <span>📚</span> My Added Books
+                  </Link>
+                  <Link to="/my-orders" className="px-4 py-2 hover:bg-blue-50 text-gray-800 flex items-center gap-2 transition">
+                    <span>🛍️</span> My Orders
+                  </Link>
+                  <Link to="/add-books" className="px-4 py-2 hover:bg-blue-50 text-gray-800 flex items-center gap-2 transition">
+                    <span>➕</span> Add Book
+                  </Link>
+                  <button
+                    onClick={handleLogOut}
+                    className="w-full text-left px-4 py-2 hover:bg-red-50 text-red-600 flex items-center gap-2 transition border-t border-blue-50 mt-1"
+                  >
+                    <span>🚪</span> Logout
+                  </button>
+                </div>
               </div>
-            ) : (
-              ""
-            )}
-            {user && user.email ? ( 
-              <button
-                onClick={handleLogOut}
-                className="btn border-none bg-[#1a237e] hover:bg-blue-700 text-white"
-              >
-                Logout
-              </button>
             ) : (
               <NavLink
                 to={"/auth/login"}

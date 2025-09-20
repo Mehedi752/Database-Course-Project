@@ -64,20 +64,27 @@ const Cart = () => {
         </div>
 
         {cartItems.map(cart => (
-          <div key={cart.item.bookId} className="bg-cyan-50 border border-gray-300 p-4 rounded shadow flex flex-col md:flex-row gap-4 items-center">
-            <input type="checkbox" defaultChecked className="self-start mt-2" />
-            <img src={cart.item.image || "https://via.placeholder.com/100"} alt={cart.item.title} className="w-24 h-32 object-cover rounded" />
-            <div className="flex-1">
-              <h3 className="text-lg font-bold">{cart.item.title}</h3>
-              <p className="text-sm text-gray-600">{cart.item.author || "Unknown Author"}</p>
-              <div className="flex items-center gap-2 text-lg font-semibold">
-                <span className="text-gray-700">৳{cart.item.price}</span>
+          <div key={cart.item.bookId} className="bg-white border border-indigo-100 rounded-2xl shadow-lg flex flex-col md:flex-row gap-6 items-center p-5 hover:shadow-2xl transition-all group relative">
+            <input type="checkbox" defaultChecked className="self-start mt-2 accent-indigo-500" />
+            <div className="w-24 h-32 flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl overflow-hidden border border-indigo-100">
+              <img src={cart.item.image || 'https://via.placeholder.com/100'} alt={cart.item.title} className="w-full h-full object-cover rounded-xl group-hover:scale-105 transition-transform duration-300" />
+            </div>
+            <div className="flex-1 flex flex-col gap-1">
+              <h3 className="text-lg font-bold text-indigo-900 mb-1 truncate" title={cart.item.title}>{cart.item.title}</h3>
+              <p className="text-sm text-gray-500 mb-1">{cart.item.author || 'Unknown Author'}</p>
+              <div className="flex flex-wrap gap-2 mb-2">
+                {cart.item.genre && <span className="inline-block bg-indigo-50 text-indigo-700 text-xs font-semibold px-2 py-1 rounded-full">{cart.item.genre}</span>}
+                {cart.item.editionYear && <span className="inline-block bg-green-50 text-green-700 text-xs font-semibold px-2 py-1 rounded-full">Edition: {cart.item.editionYear}</span>}
+              </div>
+              <div className="flex items-center gap-2 text-lg font-semibold mb-2">
+                <span className="text-indigo-700">৳{cart.item.price}</span>
                 <span className="line-through text-red-400 text-base">৳{(cart.item.price + 88).toFixed(0)}</span>
               </div>
             </div>
             <button
               onClick={() => handleRemove(cart.item.bookId)}
-              className="text-red-500 hover:text-red-700 transition"
+              className="absolute top-3 right-3 text-red-500 hover:text-red-700 bg-red-50 hover:bg-red-100 rounded-full p-2 shadow transition"
+              title="Remove from cart"
             >
               <Trash2 />
             </button>
@@ -122,11 +129,16 @@ const Cart = () => {
           Payable Total: ৳{payableTotal}
         </div>
         <Link
-          to={'/payment'}
-          state={{ totalPrice, discount, payableTotal }}
-          className="w-full btn bg-blue-600 hover:bg-blue-700 text-white py-2 rounded transition"
+          to={cartItems.length === 0 ? "#" : "/payment"}
+          onClick={e => {
+            if (cartItems.length === 0) {
+              e.preventDefault();
+              toast.error('⛔ Your cart is empty. Please add items before checkout!');
+            }
+          }}
+          className={`w-full block text-center mt-4 px-4 py-2 rounded-lg font-semibold transition-all shadow focus:outline-none focus:ring-2 focus:ring-blue-400 ${cartItems.length === 0 ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}
         >
-          অর্ডারটি নিশ্চিত করুন →
+          Proceed to Checkout
         </Link>
       </div>
     </div>

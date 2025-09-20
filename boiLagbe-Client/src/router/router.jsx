@@ -14,6 +14,9 @@ import Cart from "../pages/cart/Cart";
 import Payment from "../pages/payment/Payment";
 import BookDetails from "../pages/books/BookDetails";
 import Feedbacks from "../pages/feedbacks/Feedbacks";
+import MyOrders from "../pages/my-orders/MyOrders";
+import ChatLayout from "../pages/chats/ChatLayout";
+import ChatApp from "../pages/chats/ChatApp";
 
 const router = createBrowserRouter([
   {
@@ -90,10 +93,6 @@ const router = createBrowserRouter([
         element: <Payment></Payment>
       },
       //   {
-      //     path: '/donation',
-      //     element: <Donation></Donation>
-      //   },
-      //   {
       //     path: '/success',
       //     element: <SuccessPaymentModal></SuccessPaymentModal>
       //   },
@@ -101,23 +100,27 @@ const router = createBrowserRouter([
           path: '/feedbacks',
           element: <Feedbacks></Feedbacks>
         },
+        {
+          path: '/my-orders',
+          element: <MyOrders></MyOrders>
+        }
     ],
   },
-  //   {
-  //     path: "/chats",
-  //     element: <ChatLayout></ChatLayout>,
-  //     errorElement: <ErrorPage></ErrorPage>,
-  //     children: [
-  //       {
-  //         path: '/chats',
-  //         element: <ChatApp></ChatApp>
-  //       },
-  //       {
-  //         path: '/chats/:receieverEmail',
-  //         element: <ChatApp></ChatApp>
-  //       },
-  //     ],
-  //   },
+    {
+      path: "/chats",
+      element: <ChatLayout></ChatLayout>,
+      errorElement: <ErrorPage></ErrorPage>,
+      children: [
+        {
+          path: '/chats',
+          element: <ChatApp></ChatApp>
+        },
+        {
+          path: '/chats/:receieverEmail',
+          element: <ChatApp></ChatApp>
+        },
+      ],
+    },
 ]);
 
 export default router;

@@ -44,19 +44,19 @@ const Login = () => {
                     name: res.user.displayName,
                     email: res.user.email,
                     photoURL: res.user.photoURL,
-                    role: 'user',
+                    role: `${res.user.email === "mehedihasansagor301@gmail.com" ? 'admin' : 'user'}`,
                     timestamp: new Date().toISOString(),
                 }
 
-                // axiosPublic.post('/users', user)
-                //     .then(res => {
-                //         console.log('User added to database : ', res.data);
-                //         toast.success(`Welcome ${user.name} to our website`);
+                axiosPublic.post('/users', user)
+                    .then(res => {
+                        console.log('User added to database : ', res.data);
+                        toast.success(`Welcome ${user.name} to our website`);
 
-                //     })
-                //     .catch(err => {
-                //         console.log('Error adding user to database : ', err);
-                //     })
+                    })
+                    .catch(err => {
+                        console.log('Error adding user to database : ', err);
+                    })
 
                 navigate(location.state ? location.state : '/');
             })
