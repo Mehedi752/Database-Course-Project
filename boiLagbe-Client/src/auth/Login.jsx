@@ -67,7 +67,7 @@ const Login = () => {
 
     return (
         <div>
-            <div className=" flex flex-col-reverse lg:flex-row items-center justify-between space-y-6 container mx-auto py-[50px] px-6">
+            <div className=" flex flex-col-reverse lg:flex-row items-center justify-between space-y-6 container mx-auto py-[50px] px-6 lg:px-[120px]">
                 {/* <img src={authImg} alt="" className="lg:w-[500px] lg:h-[500px]" /> */}
                 <div className="w-full p-12 space-y-4 bg-white rounded shadow-xl border border-gray-200 lg:mx-[350px]">
                     <h1 className="text-2xl font-bold text-center">Login</h1>

@@ -18,6 +18,7 @@ import MyOrders from "../pages/my-orders/MyOrders";
 import ChatLayout from "../pages/chats/ChatLayout";
 import ChatApp from "../pages/chats/ChatApp";
 import AdminAddCoupon from "../components/AdminAddCoupon";
+import MyProfile from "../pages/my-profile/MyProfile";
 
 const router = createBrowserRouter([
   {
@@ -73,10 +74,10 @@ const router = createBrowserRouter([
       //     path: '/my-claims',
       //     element: <MyClaims />
       //   },
-      //   {
-      //     path: '/my-profile',
-      //     element: <MyProfile></MyProfile>
-      //   },
+        {
+          path: '/my-profile',
+          element: <MyProfile></MyProfile>
+        },
       //   {
       //     path: '/claim-details/:id',
       //     element: <ClaimDetails />

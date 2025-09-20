@@ -51,7 +51,7 @@ const Payment = () => {
       });
       // Optionally clear cart here
       // Show success toast
-      toast.success('Order placed successfully!');
+      // toast.success('Order placed successfully!');
       // Redirect or update UI as needed
     } catch (err) {
       toast.error('Failed to save order. Please contact support.');
