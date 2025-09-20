@@ -10,6 +10,7 @@ import {
   FaQuestionCircle,
   FaHandshake
 } from 'react-icons/fa'
+import CouponCards from '../../components/CouponCards'
 
 // Website Statistics Section
 const stats = [
@@ -198,6 +199,7 @@ const Home = () => {
       <Banner />
       <Statistics />
       <LatestBooks />
+      <CouponCards />
       <WhyChooseUs />
       <FAQ />
     </div>

@@ -74,6 +74,7 @@ async function run () {
     const messagesCollection = client.db('boiLagbe').collection('messages')
     const ordersCollection = client.db('boiLagbe').collection('orders')
     const feedbackCollection = client.db('boiLagbe').collection('feedbacks')
+    const couponCollection = client.db('boiLagbe').collection('coupons')
 
     //Users Related API
     app.post('/users', async (req, res) => {
@@ -275,6 +276,25 @@ async function run () {
       feedback.replies[replyIndex].loves = (feedback.replies[replyIndex].loves || 0) + 1;
       await feedbackCollection.updateOne({ _id: new ObjectId(id) }, { $set: { replies: feedback.replies } });
       res.send({ success: true });
+    });
+
+    // Coupons API
+    app.get('/coupons', async (req, res) => {
+      const coupons = await couponCollection.find({}).sort({ createdAt: -1 }).toArray();
+      res.send(coupons);
+    });
+
+    app.post('/coupons', async (req, res) => {
+      const coupon = req.body;
+      coupon.createdAt = new Date();
+      const result = await couponCollection.insertOne(coupon);
+      res.send({ ...coupon, _id: result.insertedId });
+    });
+
+    app.delete('/coupons/:id', async (req, res) => {
+      const id = req.params.id;
+      const result = await couponCollection.deleteOne({ _id: new ObjectId(id) });
+      res.send({ success: result.deletedCount === 1 });
     });
 
     // Chat Section with Socket.io

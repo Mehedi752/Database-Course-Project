@@ -86,51 +86,8 @@ const Navbar = () => {
               Browse Books
             </NavLink>
           </li>
-          {/* <li>
-            <NavLink
-              className={({ isActive }) =>
-                isActive
-                  ? "text-[#3B82F6] font-bold border-b-4 border-[#3B82F6] focus:outline-none"
-                  : "text-white font-medium px-2 py-2 rounded-md hover:text-blue-500 focus:outline-none"
-              }
-              to={"/add-books"}
-            >
-              Add Books
-            </NavLink>
-          </li> */}
-          {/* <li>
-            <NavLink
-              className={({ isActive }) =>
-                isActive
-                  ? "text-[#3B82F6] font-bold border-b-4 border-[#3B82F6] focus:outline-none"
-                  : "text-white font-medium px-2 py-2 rounded-md hover:text-blue-500 focus:outline-none"
-              }
-              to={"/my-added-books"}
-            >
-              My Added Books
-            </NavLink>
-          </li> */}
-
-
-
-
-          {currentUser?.role === "user" && (
-            <li>
-              <NavLink
-                className={({ isActive }) =>
-                  isActive
-                    ? "text-[#3B82F6] font-bold border-b-4 border-[#3B82F6] focus:outline-none"
-                    : "text-white font-medium px-2 py-2 rounded-md hover:text-blue-500 focus:outline-none"
-                }
-                to={"/my-profile"}
-              >
-                My Profile
-              </NavLink>
-            </li>
-          )}
         </>
       )}
-
       <li>
         <NavLink
           className={({ isActive }) =>
@@ -143,7 +100,6 @@ const Navbar = () => {
           About
         </NavLink>
       </li>
-
       <li>
         <NavLink
           className={({ isActive }) =>
@@ -265,6 +221,12 @@ const Navbar = () => {
                     <img src={user.photoURL} alt="Profile" className="w-8 h-8 rounded-full border-2 border-blue-400 shadow" />
                     <span className="text-indigo-700 font-semibold text-base break-all">{user.displayName}</span>
                   </div>
+                  {/* My Profile for normal user */}
+                  {currentUser?.role === "user" && (
+                    <Link to="/my-profile" className="px-4 py-2 hover:bg-blue-50 text-gray-800 flex items-center gap-2 transition">
+                      <span>🙍‍♂️</span> My Profile
+                    </Link>
+                  )}
                   <Link to="/my-added-books" className="px-4 py-2 hover:bg-blue-50 text-gray-800 flex items-center gap-2 transition">
                     <span>📚</span> My Added Books
                   </Link>
@@ -274,6 +236,12 @@ const Navbar = () => {
                   <Link to="/add-books" className="px-4 py-2 hover:bg-blue-50 text-gray-800 flex items-center gap-2 transition">
                     <span>➕</span> Add Book
                   </Link>
+                  {/* Admin Coupon Form Link */}
+                  {currentUser?.role === "admin" && (
+                    <Link to="/admin-coupons" className="px-4 py-2 hover:bg-blue-50 text-gray-800 flex items-center gap-2 transition">
+                      <span>🏷️</span> Admin Coupon
+                    </Link>
+                  )}
                   <button
                     onClick={handleLogOut}
                     className="w-full text-left px-4 py-2 hover:bg-red-50 text-red-600 flex items-center gap-2 transition border-t border-blue-50 mt-1"

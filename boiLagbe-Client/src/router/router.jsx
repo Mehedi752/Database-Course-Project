@@ -17,6 +17,7 @@ import Feedbacks from "../pages/feedbacks/Feedbacks";
 import MyOrders from "../pages/my-orders/MyOrders";
 import ChatLayout from "../pages/chats/ChatLayout";
 import ChatApp from "../pages/chats/ChatApp";
+import AdminAddCoupon from "../components/AdminAddCoupon";
 
 const router = createBrowserRouter([
   {
@@ -103,6 +104,10 @@ const router = createBrowserRouter([
         {
           path: '/my-orders',
           element: <MyOrders></MyOrders>
+        },
+        {
+          path: '/admin-coupons',
+          element: <AdminAddCoupon></AdminAddCoupon>
         }
     ],
   },

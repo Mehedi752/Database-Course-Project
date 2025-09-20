@@ -63,6 +63,7 @@ const Payment = () => {
       toast.error('⛔ Your cart is empty. Please add items before ordering!');
       return;
     }
+  
     if (paymentMethod === 'cod') {
       await axiosPublic.post('/confirm-payment', {
         email: user?.email,
